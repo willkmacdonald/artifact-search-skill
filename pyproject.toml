@@ -1,0 +1,41 @@
+[project]
+name = "artifact-search-skill"
+version = "0.1.0"
+description = "Multi-app artifact search skill for MedTech risk management"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "httpx>=0.26.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "python-dotenv>=1.0.0",
+    "openai>=1.10.0",
+    "azure-devops>=7.1.0b4",
+    "msrest>=0.7.1",
+    "azure-identity>=1.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+]
+frontend = [
+    "nodejs-bin>=18.0.0",
+]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I", "UP", "B", "SIM", "N"]
+ignore = ["E501"]
+
+[tool.ruff.isort]
+known-first-party = ["artifact_search"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
