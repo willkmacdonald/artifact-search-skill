@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ruff_cache/
+
+# Environment
+.env
+.env.*
+
+# Frontend (separate deployment)
+frontend/
+
+# Tests (not needed in production)
+tests/
+
+# Documentation
+*.md
+docs/
+
+# Sample data
+sample_data/
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/
