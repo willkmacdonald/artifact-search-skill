@@ -1,92 +1,61 @@
-# Current Sprint: Phase 2 - Deploy Backend to Azure
+# Current Sprint: Phase 4 - Production Hardening (Optional)
 
 ## Goal
-Deploy containerized backend to existing Container Apps Environment.
+Add observability and improve reliability for ongoing demos.
 
 ## Context
-- Phase 1 complete: Backend containerized and tested locally
-- Reusing existing Container Apps Environment and ACR to minimize costs
-- See `docs/specs/implementation-plan.md` for full migration plan
+- Phases 1-3 complete: Full deployment pipeline working
+- Frontend: https://artifact-search.willmacdonald.com
+- Backend: https://artifact-search-api.mangotree-f82b3c1f.eastus.azurecontainerapps.io
+- CI/CD: Push to main auto-deploys both frontend and backend
 
 ---
 
 ## Tasks
 
-### PR 2.1: Push Image to ACR
-**Branch**: `feature/acr-push`
-
-- [ ] Document manual deployment steps in `docs/deployment.md`
-- [ ] Create deployment script (`scripts/deploy-backend.sh`)
-  - Build and tag image
-  - Login to ACR
-  - Push image
-- [ ] Push first image to existing ACR
-- [ ] Test: Image visible in ACR portal
+### PR 4.1: Add Application Insights
+- [ ] Integrate OpenTelemetry with Azure Monitor
+- [ ] Add request tracing and error logging
+- [ ] Test: View traces in Azure Portal
 
 **Files**:
-- `docs/deployment.md` (create)
-- `scripts/deploy-backend.sh` (create)
+- `src/artifact_search/telemetry.py` (create)
+- `src/artifact_search/api.py` (update with tracing)
+- `requirements.txt` (add opentelemetry packages)
 
 ---
 
-### PR 2.2: Create Container App
-**Branch**: `feature/container-app`
-
-- [ ] Create Container App via Azure CLI or Portal
-- [ ] Configure environment variables from `.env`
-- [ ] Configure secrets for API keys (ADO PAT, Figma token, etc.)
-- [ ] Set scale-to-zero (min replicas: 0, max replicas: 1)
-- [ ] Update `ALLOWED_ORIGINS` for Container App URL
-- [ ] Test: `/health` endpoint accessible from internet
-- [ ] Test: `/health/details` shows all connectors working
+### PR 4.2: Documentation Update
+- [ ] Update README with deployment instructions
+- [ ] Add architecture diagram
+- [ ] Document environment variables
 
 **Files**:
-- `docs/deployment.md` (update with Container App setup)
-
----
-
-### PR 2.3: Add GitHub Actions CI/CD
-**Branch**: `feature/backend-cicd`
-
-- [ ] Create `.github/workflows/deploy-backend.yml`
-  - Trigger on push to main (paths: `src/**`, `Dockerfile`)
-  - Build Docker image
-  - Push to ACR
-  - Deploy to Container Apps
-- [ ] Add `AZURE_CREDENTIALS` secret to GitHub repo
-- [ ] Test: Push to main triggers deployment
-- [ ] Test: New code deploys automatically
-
-**Files**:
-- `.github/workflows/deploy-backend.yml` (create)
-- `docs/deployment.md` (update with CI/CD info)
+- `README.md` (update)
+- `docs/deployment.md` (update)
 
 ---
 
 ## Definition of Done
-- [ ] All 3 PRs merged to main
-- [ ] Backend accessible at `https://artifact-search-api.<env>.azurecontainerapps.io`
-- [ ] `/health` endpoint responds from internet
-- [ ] All 4 connectors working (check `/health/details`)
-- [ ] Push to main triggers automatic deployment
+- [ ] Both PRs merged to main
+- [ ] Traces visible in Azure Portal
+- [ ] README has current deployment info
 
 ---
 
 ## Notes
-- Need existing ACR name and Container Apps Environment name before starting
-- API keys will be configured as Container Apps secrets
-- Scale-to-zero means 5-15s cold start delay (acceptable for demo)
+- This phase is optional - the app is fully functional
+- Application Insights helps debug issues in production
+- Documentation helps future maintenance
 
-## Phase 1 Accomplishments (Complete)
-- [x] PR 1.1: Dockerfile and .dockerignore
-- [x] PR 1.2: Configurable CORS (`ALLOWED_ORIGINS` env var)
-- [x] PR 1.3: Container-ready logging and fast health check
-- [x] Container builds and runs locally with all connectors
-- [x] `/health` responds in ~10ms (fast for probes)
-- [x] `/health/details` provides full connection status
+## Previous Phase Accomplishments
 
-## Session 5 Accomplishments (2026-01-21)
-- [x] Completed PR 1.2: Configurable CORS
-- [x] Completed PR 1.3: Container-ready logging and fast health check
-- [x] Phase 1 complete - ready for Azure deployment
-- [ ] **Next**: PR 2.1 (Push Image to ACR)
+### Session 6 (2026-01-22): Phases 2 & 3 Complete
+- [x] Fixed GitHub Actions auth (azure/login@v1 for JSON credentials)
+- [x] Created new Service Principal with contributor role
+- [x] Backend CI/CD working - push to main deploys automatically
+- [x] Configured Next.js for static export
+- [x] Created Azure Static Web App
+- [x] Frontend CI/CD working via SWA GitHub integration
+- [x] Custom domain configured: artifact-search.willmacdonald.com
+- [x] CORS configured for all domains

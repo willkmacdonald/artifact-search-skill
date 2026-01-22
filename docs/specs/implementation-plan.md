@@ -53,50 +53,60 @@ Migrate artifact-search-skill from local development to Azure for demo/PoC hosti
 
 ---
 
-## Phase 2: Deploy Backend to Azure (Current Sprint)
+## Phase 2: Deploy Backend to Azure ✅ COMPLETE
 
 **Goal**: Deploy containerized backend to existing Container Apps Environment.
 
-### PR 2.1: Push Image to ACR
-- Document manual deployment steps
-- Create deployment script (`scripts/deploy-backend.sh`)
-- Push first image to existing ACR
-- Test: Image visible in ACR portal
+### PR 2.1: Push Image to ACR ✅
+- Documented manual deployment steps
+- Created deployment script (`scripts/deploy-backend.sh`)
+- Pushed first image to existing ACR
+- Image visible in ACR portal
 
-### PR 2.2: Create Container App
-- Create Container App with environment variables
-- Configure secrets for API keys
+### PR 2.2: Create Container App ✅
+- Created Container App with environment variables
+- Configured secrets for API keys
 - Set scale-to-zero (min replicas: 0)
-- Test: `/health` endpoint accessible from internet
+- `/health` endpoint accessible from internet
 
-### PR 2.3: Add GitHub Actions CI/CD
-- Create `.github/workflows/deploy-backend.yml`
+### PR 2.3: Add GitHub Actions CI/CD ✅
+- Created `.github/workflows/deploy-backend.yml`
 - Build image on push to main
 - Deploy to Container Apps automatically
-- Test: Push to main triggers deployment
+- Push to main triggers deployment
+- Fixed: Use `azure/login@v1` for JSON credentials compatibility
+
+**Backend URL**: https://artifact-search-api.mangotree-f82b3c1f.eastus.azurecontainerapps.io
 
 ---
 
-## Phase 3: Deploy Frontend to Azure
+## Phase 3: Deploy Frontend to Azure ✅ COMPLETE
 
 **Goal**: Deploy Next.js frontend to Azure Static Web Apps.
 
-### PR 3.1: Configure Static Export
-- Add `output: 'export'` to `next.config.js`
-- Add `NEXT_PUBLIC_API_URL` environment variable
-- Update API calls to use configurable base URL
-- Test: `npm run build` produces static files in `out/`
+### PR 3.1: Configure Static Export ✅
+- Added `output: 'export'` to `next.config.js`
+- Added `NEXT_PUBLIC_API_URL` environment variable
+- Updated API calls to use configurable base URL
+- `npm run build` produces static files in `out/`
 
-### PR 3.2: Create Static Web App
-- Create SWA resource linked to GitHub repo
-- Configure environment variable for API URL
-- Update backend CORS for SWA domain
-- Test: Frontend loads, connects to backend
+### PR 3.2: Create Static Web App ✅
+- Created SWA resource linked to GitHub repo
+- Configured environment variable for API URL
+- Updated backend CORS for SWA domain
+- Frontend loads, connects to backend
 
-### PR 3.3: Add Frontend CI/CD (Auto via SWA)
+### PR 3.3: Add Frontend CI/CD ✅
 - SWA automatically deploys on push (GitHub integration)
-- Verify workflow file created by Azure
-- Test: Push to main deploys frontend
+- Workflow file created by Azure
+- Push to main deploys frontend
+
+### PR 3.4: Custom Domain ✅
+- Configured custom domain: artifact-search.willmacdonald.com
+- SSL certificate auto-provisioned
+- Updated CORS for custom domain
+
+**Frontend URL**: https://artifact-search.willmacdonald.com
 
 ---
 
@@ -109,12 +119,7 @@ Migrate artifact-search-skill from local development to Azure for demo/PoC hosti
 - Add request tracing and error logging
 - Test: View traces in Azure Portal
 
-### PR 4.2: Add Custom Domain (Optional)
-- Configure custom domain for SWA
-- Add SSL certificate
-- Update CORS for new domain
-
-### PR 4.3: Documentation Update
+### PR 4.2: Documentation Update
 - Update README with deployment instructions
 - Add architecture diagram
 - Document environment variables
@@ -123,49 +128,38 @@ Migrate artifact-search-skill from local development to Azure for demo/PoC hosti
 
 ## Phase Summary
 
-| Phase | Focus | PRs | Priority |
-|-------|-------|-----|----------|
-| 1 | Containerize Backend | 3 | Required |
-| 2 | Deploy Backend | 3 | Required |
-| 3 | Deploy Frontend | 3 | Required |
-| 4 | Production Hardening | 3 | Optional |
+| Phase | Focus | PRs | Status |
+|-------|-------|-----|--------|
+| 1 | Containerize Backend | 3 | ✅ Complete |
+| 2 | Deploy Backend | 3 | ✅ Complete |
+| 3 | Deploy Frontend | 4 | ✅ Complete |
+| 4 | Production Hardening | 2 | Optional |
 
-**Minimum Viable Deployment**: Phases 1-3 (9 PRs)
-
----
-
-## Dependencies
-
-### Existing Azure Resources (Required)
-- Container Apps Environment
-- Azure Container Registry (Basic tier)
-- Resource Group
-
-### New Azure Resources
-- Container App (artifact-search-api)
-- Static Web App (artifact-search-frontend)
-
-### GitHub Configuration
-- `AZURE_CREDENTIALS` secret for GitHub Actions
-- Repository access for SWA deployment
+**Minimum Viable Deployment**: Phases 1-3 ✅ COMPLETE
 
 ---
 
-## Risk Mitigation
+## Deployed Resources
 
-| Risk | Mitigation |
-|------|------------|
-| Cold start latency (scale-to-zero) | Acceptable for demo; document expected 5-15s delay |
-| ACR storage limits (Basic tier) | Configure image retention policy (7 days) |
-| Secret management | Use Container Apps secrets (sufficient for demo) |
-| CORS misconfiguration | Test end-to-end before marking complete |
+### URLs
+- **Frontend**: https://artifact-search.willmacdonald.com
+- **Backend**: https://artifact-search-api.mangotree-f82b3c1f.eastus.azurecontainerapps.io
+
+### Azure Resources
+- Container App: `artifact-search-api` in `factory-agent-dev-rg`
+- Static Web App: `artifact-search-frontend` in `factory-agent-dev-rg`
+- ACR: `factoryagent4u4zqkacr`
+
+### GitHub Secrets Required
+- `AZURE_CREDENTIALS`: Service Principal JSON for Azure login
+- `AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_FOREST_08206B80F`: SWA deployment token (auto-created)
 
 ---
 
-## Success Criteria
+## Success Criteria ✅ ALL MET
 
-1. Backend accessible at `https://artifact-search-api.<env>.azurecontainerapps.io`
-2. Frontend accessible at `https://<app>.azurestaticapps.net`
-3. End-to-end search works (frontend → backend → connectors)
-4. Scales to zero when idle (verify in Azure Portal)
-5. Push to main triggers automatic deployment
+1. ✅ Backend accessible at `https://artifact-search-api.mangotree-f82b3c1f.eastus.azurecontainerapps.io`
+2. ✅ Frontend accessible at `https://artifact-search.willmacdonald.com`
+3. ✅ End-to-end search works (frontend → backend → connectors)
+4. ✅ Scales to zero when idle
+5. ✅ Push to main triggers automatic deployment
