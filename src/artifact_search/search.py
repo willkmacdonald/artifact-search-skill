@@ -15,7 +15,7 @@ from artifact_search.connectors import (
     NotionConnector,
 )
 from artifact_search.connectors.base import BaseConnector
-from artifact_search.models import AppSource, Artifact, RoutedQuery, SearchQuery, SearchResult
+from artifact_search.models import AppSource, Artifact, SearchQuery, SearchResult
 from artifact_search.router import route_query
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class ArtifactSearchEngine:
         all_artifacts: list[Artifact] = []
         sources_searched: list[AppSource] = []
 
-        for connector, result in zip(target_connectors, results):
+        for connector, result in zip(target_connectors, results, strict=True):
             if isinstance(result, Exception):
                 logger.error(f"Search failed for {connector.source.value}: {result}")
             else:

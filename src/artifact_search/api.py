@@ -8,7 +8,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from artifact_search.config import get_settings
 from artifact_search.models import AppSource, Artifact, SearchResult
 from artifact_search.search import ArtifactSearchEngine
 
@@ -104,7 +103,9 @@ async def search(request: SearchRequest) -> SearchResult:
         return result
     except Exception as e:
         logger.error(f"Search failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Search failed: {str(e)}"
+        ) from e
 
 
 @app.post("/chat")
@@ -139,7 +140,9 @@ async def chat(request: ChatRequest) -> dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Chat failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Chat failed: {str(e)}"
+        ) from e
 
 
 @app.get("/artifact/{source}/{artifact_id}", response_model=Artifact)
@@ -150,8 +153,10 @@ async def get_artifact(source: str, artifact_id: str) -> Artifact:
 
     try:
         app_source = AppSource(source)
-    except ValueError:
-        raise HTTPException(status_code=400, detail=f"Invalid source: {source}")
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid source: {source}"
+        ) from e
 
     artifact = await _search_engine.get_artifact(app_source, artifact_id)
     if not artifact:

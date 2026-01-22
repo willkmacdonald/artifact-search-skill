@@ -147,7 +147,7 @@ class NotionConnector(BaseConnector):
 
             # Extract title - find whichever property has type "title"
             title = ""
-            for prop_name, prop_value in properties.items():
+            for _prop_name, prop_value in properties.items():
                 if prop_value.get("type") == "title":
                     title_items = prop_value.get("title", [])
                     title = "".join(

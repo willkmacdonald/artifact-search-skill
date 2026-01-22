@@ -1,7 +1,8 @@
 """Azure DevOps connector for work items and requirements."""
 
 import logging
-from datetime import datetime, timezone
+import re
+from datetime import datetime
 
 import httpx
 
@@ -66,10 +67,16 @@ class AzureDevOpsConnector(BaseConnector):
             client = await self._get_client()
             project = self._settings.azure_devops_project
 
-            # Build WIQL query
+            # Build WIQL query with sanitized search terms
+            def sanitize_term(term: str) -> str:
+                """Sanitize search term to prevent WIQL injection."""
+                return re.sub(r"['\"\\\[\]]", "", term)
+
+            sanitized_terms = [sanitize_term(t) for t in query.search_terms]
             search_terms = " OR ".join(
-                f"[System.Title] CONTAINS '{term}' OR [System.Description] CONTAINS '{term}'"
-                for term in query.search_terms
+                f"[System.Title] CONTAINS '{term}' OR "
+                f"[System.Description] CONTAINS '{term}'"
+                for term in sanitized_terms
             )
 
             wiql = {
