@@ -117,6 +117,55 @@ The Container App requires these environment variables (configured in PR 2.2):
 | `AZURE_AI_DEPLOYMENT` | Deployment name (default: gpt-4o) | No |
 | `ALLOWED_ORIGINS` | CORS origins (comma-separated) | Yes |
 
+## CI/CD with GitHub Actions
+
+Automatic deployment is configured via GitHub Actions. Every push to `main` that changes `src/**`, `Dockerfile`, or the workflow file triggers a deployment.
+
+### Workflow: `.github/workflows/deploy-backend.yml`
+
+The workflow:
+1. Checks out code
+2. Logs into Azure using `AZURE_CREDENTIALS` secret
+3. Logs into ACR
+4. Builds and pushes Docker image with both `latest` and git SHA tags
+5. Updates the Container App to use the new image
+6. Verifies deployment by calling `/health` endpoint
+
+### Required GitHub Secrets
+
+| Secret | Description |
+|--------|-------------|
+| `AZURE_CREDENTIALS` | Service principal JSON with Azure access |
+
+### Manual Trigger
+
+You can manually trigger a deployment from the GitHub Actions UI:
+1. Go to Actions tab
+2. Select "Deploy Backend" workflow
+3. Click "Run workflow"
+
+### Monitoring Deployments
+
+View deployment status:
+- GitHub Actions: Check the workflow run
+- Azure Portal: Container Apps > artifact-search-api > Revisions
+
+## Container App Configuration
+
+The Container App is configured with:
+- **Scale**: Min 0, Max 1 replicas (scale-to-zero)
+- **Resources**: 0.25 CPU, 0.5Gi memory
+- **Ingress**: External, port 8000
+- **Identity**: User-assigned managed identity for ACR access
+
+### Accessing the API
+
+- **URL**: `https://artifact-search-api.mangotree-f82b3c1f.eastus.azurecontainerapps.io`
+- **Health check**: `GET /health`
+- **Detailed health**: `GET /health/details`
+
+Note: Scale-to-zero means 5-15 second cold start delay on first request after idle period.
+
 ## Troubleshooting
 
 ### ACR Login Fails
