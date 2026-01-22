@@ -1,0 +1,193 @@
+{
+  "project_name": "CardioWatch Risk Management",
+  "custom_fields": {
+    "Risk": {
+      "Hazard": "string",
+      "Harm": "string",
+      "Severity": "picklist: Negligible, Minor, Serious, Critical, Catastrophic",
+      "Probability Before": "picklist: Improbable, Remote, Occasional, Probable, Frequent",
+      "Probability After": "picklist: Improbable, Remote, Occasional, Probable, Frequent",
+      "Risk Level Before": "picklist: Acceptable, ALARP, Unacceptable",
+      "Risk Level After": "picklist: Acceptable, ALARP, Unacceptable",
+      "ISO 14971 Reference": "string"
+    },
+    "Mitigation": {
+      "Control Type": "picklist: Inherent Safety, Protective Measure, Information for Safety",
+      "Linked Risks": "multivalue string",
+      "Verification Method": "string",
+      "Effectiveness": "picklist: High, Medium, Low"
+    }
+  },
+  "work_items": [
+    {
+      "type": "Risk",
+      "title": "RISK-001: Incorrect Heart Rate Reading",
+      "description": "The device may display incorrect heart rate readings due to sensor malfunction or poor skin contact, leading to delayed treatment.",
+      "fields": {
+        "Hazard": "Inaccurate physiological measurement",
+        "Harm": "Delayed treatment of cardiac arrhythmia",
+        "Severity": "Critical",
+        "Probability Before": "Occasional",
+        "Probability After": "Remote",
+        "Risk Level Before": "Unacceptable",
+        "Risk Level After": "ALARP",
+        "ISO 14971 Reference": "ISO 14971:2019 Section 5.4"
+      },
+      "tags": "cardiac, sensor, measurement, ISO-14971"
+    },
+    {
+      "type": "Risk",
+      "title": "RISK-002: Missed Arrhythmia Alert",
+      "description": "Critical arrhythmia event not detected or alert not delivered to patient/caregiver, resulting in failure to seek emergency care.",
+      "fields": {
+        "Hazard": "Failure to detect life-threatening condition",
+        "Harm": "Death or serious injury from untreated arrhythmia",
+        "Severity": "Catastrophic",
+        "Probability Before": "Remote",
+        "Probability After": "Improbable",
+        "Risk Level Before": "Unacceptable",
+        "Risk Level After": "Acceptable",
+        "ISO 14971 Reference": "ISO 14971:2019 Section 5.4"
+      },
+      "tags": "arrhythmia, alert, safety-critical, ISO-14971"
+    },
+    {
+      "type": "Risk",
+      "title": "RISK-003: Patient Data Breach",
+      "description": "Unauthorized access to protected health information (PHI) stored on device or transmitted to cloud services.",
+      "fields": {
+        "Hazard": "Cybersecurity vulnerability",
+        "Harm": "Privacy violation, identity theft, patient distress",
+        "Severity": "Serious",
+        "Probability Before": "Occasional",
+        "Probability After": "Remote",
+        "Risk Level Before": "Unacceptable",
+        "Risk Level After": "ALARP",
+        "ISO 14971 Reference": "ISO 14971:2019 Section 5.4, IEC 62443"
+      },
+      "tags": "cybersecurity, HIPAA, PHI, privacy"
+    },
+    {
+      "type": "Risk",
+      "title": "RISK-004: Battery Depletion During Monitoring",
+      "description": "Device battery depletes without warning during critical monitoring period, leaving patient unmonitored.",
+      "fields": {
+        "Hazard": "Loss of monitoring capability",
+        "Harm": "Undetected cardiac event during gap in monitoring",
+        "Severity": "Critical",
+        "Probability Before": "Probable",
+        "Probability After": "Remote",
+        "Risk Level Before": "Unacceptable",
+        "Risk Level After": "Acceptable",
+        "ISO 14971 Reference": "ISO 14971:2019 Section 5.4"
+      },
+      "tags": "battery, power, monitoring-gap"
+    },
+    {
+      "type": "Risk",
+      "title": "RISK-005: Skin Irritation from Prolonged Wear",
+      "description": "Extended skin contact with device materials causes irritation, allergic reaction, or pressure injury.",
+      "fields": {
+        "Hazard": "Biocompatibility issue",
+        "Harm": "Skin damage, allergic reaction, user discontinues monitoring",
+        "Severity": "Minor",
+        "Probability Before": "Occasional",
+        "Probability After": "Remote",
+        "Risk Level Before": "ALARP",
+        "Risk Level After": "Acceptable",
+        "ISO 14971 Reference": "ISO 14971:2019 Section 5.4, ISO 10993"
+      },
+      "tags": "biocompatibility, skin, materials, ISO-10993"
+    },
+    {
+      "type": "Mitigation",
+      "title": "MIT-001: Redundant Sensor Algorithm",
+      "description": "Implement dual-sensor validation algorithm that cross-checks readings from primary and secondary heart rate sensors. Alert user when readings diverge beyond acceptable threshold.",
+      "fields": {
+        "Control Type": "Inherent Safety",
+        "Linked Risks": "RISK-001",
+        "Verification Method": "Algorithm validation testing per IEC 62304",
+        "Effectiveness": "High"
+      },
+      "tags": "algorithm, sensor, validation, IEC-62304"
+    },
+    {
+      "type": "Mitigation",
+      "title": "MIT-002: Multi-Channel Alert System",
+      "description": "Implement redundant alert delivery through: 1) On-device vibration and audio, 2) Mobile app push notification, 3) SMS to emergency contacts, 4) Cloud-based monitoring dashboard for caregivers.",
+      "fields": {
+        "Control Type": "Protective Measure",
+        "Linked Risks": "RISK-002",
+        "Verification Method": "End-to-end alert delivery testing, failure mode simulation",
+        "Effectiveness": "High"
+      },
+      "tags": "alert, notification, redundancy, safety-critical"
+    },
+    {
+      "type": "Mitigation",
+      "title": "MIT-003: End-to-End Encryption",
+      "description": "Implement AES-256 encryption for data at rest and TLS 1.3 for data in transit. Apply HIPAA-compliant access controls with role-based authentication.",
+      "fields": {
+        "Control Type": "Protective Measure",
+        "Linked Risks": "RISK-003",
+        "Verification Method": "Penetration testing, HIPAA compliance audit",
+        "Effectiveness": "High"
+      },
+      "tags": "encryption, security, HIPAA, cybersecurity"
+    },
+    {
+      "type": "Mitigation",
+      "title": "MIT-004: Predictive Battery Management",
+      "description": "Implement battery monitoring system with: 1) 24-hour advance low battery warning, 2) 4-hour critical warning with escalation to caregiver, 3) Graceful shutdown with data preservation.",
+      "fields": {
+        "Control Type": "Protective Measure",
+        "Linked Risks": "RISK-004",
+        "Verification Method": "Battery drain testing across temperature ranges",
+        "Effectiveness": "High"
+      },
+      "tags": "battery, power-management, warning-system"
+    },
+    {
+      "type": "Mitigation",
+      "title": "MIT-005: Hypoallergenic Materials with Wear Guidance",
+      "description": "Use ISO 10993 certified hypoallergenic materials for all skin-contact surfaces. Provide user instructions for recommended wear duration and skin care.",
+      "fields": {
+        "Control Type": "Information for Safety",
+        "Linked Risks": "RISK-005",
+        "Verification Method": "Biocompatibility testing per ISO 10993, user study",
+        "Effectiveness": "Medium"
+      },
+      "tags": "materials, biocompatibility, labeling, ISO-10993"
+    },
+    {
+      "type": "User Story",
+      "title": "US-101: View Risk Dashboard",
+      "description": "As a quality engineer, I want to view a dashboard showing all identified risks and their current status so that I can monitor overall product risk profile.",
+      "acceptance_criteria": "- Display risk matrix (severity x probability)\n- Show count of risks by status\n- Filter by risk level (Acceptable/ALARP/Unacceptable)\n- Export to PDF for regulatory submission",
+      "tags": "dashboard, risk-management, quality"
+    },
+    {
+      "type": "User Story",
+      "title": "US-102: Link Requirements to Risks",
+      "description": "As a systems engineer, I want to link product requirements to associated risks so that I can ensure traceability for regulatory compliance.",
+      "acceptance_criteria": "- Create bidirectional links between requirements and risks\n- Generate traceability matrix report\n- Alert when requirement changes affect linked risks",
+      "tags": "traceability, requirements, regulatory"
+    },
+    {
+      "type": "Test Case",
+      "title": "TC-001: Verify Arrhythmia Detection Accuracy",
+      "description": "Verify that the device correctly detects atrial fibrillation with sensitivity >= 95% and specificity >= 90% using MIT-BIH Arrhythmia Database.",
+      "steps": "1. Load MIT-BIH test dataset\n2. Run detection algorithm\n3. Compare results to annotated ground truth\n4. Calculate sensitivity and specificity",
+      "expected_result": "Sensitivity >= 95%, Specificity >= 90%",
+      "tags": "validation, algorithm, arrhythmia, FDA"
+    },
+    {
+      "type": "Test Case",
+      "title": "TC-002: Verify Alert Delivery Latency",
+      "description": "Verify that critical alerts are delivered to all configured channels within 30 seconds of detection.",
+      "steps": "1. Configure multi-channel alerts\n2. Simulate critical arrhythmia event\n3. Measure time from detection to delivery on each channel\n4. Repeat 100 times",
+      "expected_result": "95th percentile latency < 30 seconds for all channels",
+      "tags": "validation, alerts, performance, safety-critical"
+    }
+  ]
+}
