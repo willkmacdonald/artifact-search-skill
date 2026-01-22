@@ -1,0 +1,80 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'Dockerfile'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  ACR_NAME: factoryagent4u4zqkacr
+  CONTAINER_APP_NAME: artifact-search-api
+  RESOURCE_GROUP: factory-agent-dev-rg
+  IMAGE_NAME: artifact-search-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build and push image
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          FULL_IMAGE="${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}"
+
+          docker build -t ${FULL_IMAGE}:${IMAGE_TAG} -t ${FULL_IMAGE}:latest .
+          docker push ${FULL_IMAGE}:${IMAGE_TAG}
+          docker push ${FULL_IMAGE}:latest
+
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Deploy to Container Apps
+        run: |
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      - name: Verify deployment
+        run: |
+          # Get the FQDN
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "properties.configuration.ingress.fqdn" \
+            --output tsv)
+
+          echo "Container App URL: https://${FQDN}"
+
+          # Wait for cold start and test health endpoint
+          echo "Waiting for container to be ready..."
+          sleep 30
+
+          for i in {1..6}; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "https://${FQDN}/health" || echo "000")
+            echo "Attempt $i: HTTP Status $HTTP_STATUS"
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Health check passed!"
+              curl -s "https://${FQDN}/health" | jq .
+              exit 0
+            fi
+            sleep 15
+          done
+
+          echo "Health check failed after multiple attempts"
+          exit 1
