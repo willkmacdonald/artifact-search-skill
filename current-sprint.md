@@ -7,6 +7,7 @@ Improve Figma connector reliability by implementing persistent caching to minimi
 - Figma API has strict rate limits (as low as 6 requests/month for View seats on Starter plan)
 - Current in-memory cache resets when server restarts
 - Need persistent cache to survive restarts and reduce API calls
+- **UPDATE**: User upgraded to Dev seat on Professional plan (10 req/min) - rate limits no longer blocking
 
 ## Tasks
 
@@ -28,5 +29,14 @@ Improve Figma connector reliability by implementing persistent caching to minimi
 
 ## Notes
 - Current in-memory cache TTL: 5 minutes
-- Figma `Retry-After` returned 391867 seconds (~4.5 days) indicating monthly limit hit
-- Dev/Full seats have much higher limits (10-150 req/min vs 6/month)
+- User upgraded to Figma Dev seat (Professional) - now has 10 req/min for Tier 1 endpoints
+- Persistent caching still valuable to reduce API calls and improve reliability
+- All 4 connectors now working: Azure DevOps, Figma, Ice Panel, Notion
+
+## Session 2 Accomplishments (2026-01-21)
+- [x] Fixed all 4 connectors (Azure DevOps, Figma, Ice Panel, Notion)
+- [x] Added retry/caching to Figma connector
+- [x] Fixed Ice Panel API paths
+- [x] Fixed Notion title property detection
+- [x] Ran pr-reviewer and fixed CRITICAL/IMPORTANT issues
+- [x] Pushed all code to GitHub
