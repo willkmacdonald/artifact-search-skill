@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir build && \
 # Stage 2: Runtime
 FROM python:3.11-slim AS runtime
 
+# Ensure Python output is sent straight to container logs
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
 # Create non-root user
