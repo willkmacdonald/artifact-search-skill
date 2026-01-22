@@ -64,6 +64,9 @@ const suggestedQueries = [
   "Show requirements linked to RISK-001",
 ];
 
+// API base URL - uses environment variable in production, empty string for local dev with proxy
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -84,7 +87,7 @@ export default function Home() {
 
   const checkHealth = async () => {
     try {
-      const response = await fetch("/api/health");
+      const response = await fetch(`${API_BASE_URL}/health`);
       if (response.ok) {
         const data = await response.json();
         setConnectionStatus("connected");
@@ -113,7 +116,7 @@ export default function Home() {
     ]);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage, history: [] }),
