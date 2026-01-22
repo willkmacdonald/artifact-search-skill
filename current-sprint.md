@@ -12,25 +12,26 @@ Get the FastAPI backend running in a Docker container, ready for Azure deploymen
 
 ## Tasks
 
-### PR 1.1: Create Dockerfile and .dockerignore
-**Branch**: `feature/dockerfile`
+### PR 1.1: Create Dockerfile and .dockerignore ✅ COMPLETE
+**Branch**: `feature/dockerfile` (merged)
 
-- [ ] Create `Dockerfile` (multi-stage: builder + runtime)
+- [x] Create `Dockerfile` (multi-stage: builder + runtime)
   - Python 3.11-slim base image
   - Install dependencies in builder stage
-  - Copy only `src/` to runtime stage
+  - Copy only `src/artifact_search/` to runtime stage
   - Non-root user for security
   - Health check command
   - CMD: uvicorn with `--host 0.0.0.0`
-- [ ] Create `.dockerignore`
+  - PYTHONUNBUFFERED=1 for container logging
+- [x] Create `.dockerignore`
   - Exclude: `.git`, `venv/`, `.env`, `frontend/`, `tests/`, `*.md`, `sample_data/`
-- [ ] Test locally: `docker build -t artifact-search-api .`
-- [ ] Test locally: `docker run -p 8000:8000 --env-file .env artifact-search-api`
-- [ ] Verify `/health` endpoint works
+- [x] Test locally: `docker build -t artifact-search-api .`
+- [x] Test locally: `docker run -p 8000:8000 --env-file .env artifact-search-api`
+- [x] Verify `/health` endpoint works
 
 **Files**:
-- `Dockerfile` (create)
-- `.dockerignore` (create)
+- `Dockerfile` (created)
+- `.dockerignore` (created)
 
 ---
 
@@ -77,13 +78,20 @@ Get the FastAPI backend running in a Docker container, ready for Azure deploymen
 - Focus is on deployment infrastructure, not feature development
 - Keep changes minimal to reduce risk
 
+## Session 4 Accomplishments (2026-01-21)
+- [x] Completed PR 1.1: Dockerfile and .dockerignore
+- [x] Fixed module path issue (`COPY src/artifact_search/` instead of `COPY src/`)
+- [x] Added `PYTHONUNBUFFERED=1` for container logging (pr-reviewer fix)
+- [x] Verified container builds and runs with all connectors
+- [x] Merged PR #1 to main
+- [ ] **Next**: PR 1.2 (Configurable CORS)
+
 ## Session 3 Accomplishments (2026-01-21)
 - [x] Created Azure migration plan (`docs/specs/implementation-plan.md`)
 - [x] Created backend architecture spec (`docs/specs/backend-design.md`)
 - [x] Created frontend architecture spec (`docs/specs/frontend-design.md`)
 - [x] Created project-local `/load-context` skill (`.claude/skills/load-context.md`)
 - [x] Broke Phase 1 into 3 PR-sized tasks
-- [ ] **Next**: Start PR 1.1 (Dockerfile)
 
 ## Previous Sprint Accomplishments
 - [x] Fixed all 4 connectors (Azure DevOps, Figma, Ice Panel, Notion)
