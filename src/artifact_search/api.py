@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from artifact_search import __version__
 from artifact_search.config import get_settings
 from artifact_search.models import AppSource, Artifact, SearchResult
 from artifact_search.search import ArtifactSearchEngine
@@ -26,7 +27,6 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
 
     # Startup banner for container logs
-    from artifact_search import __version__
     logger.info("=" * 60)
     logger.info(f"Artifact Search API v{__version__} starting")
     logger.info(f"CORS origins: {settings.get_allowed_origins()}")
@@ -104,8 +104,6 @@ class DetailedHealthResponse(BaseModel):
 @app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
     """Fast health check for container probes (no external calls)."""
-    from artifact_search import __version__
-
     if not _search_engine:
         raise HTTPException(status_code=503, detail="Search engine not initialized")
 
@@ -115,8 +113,6 @@ async def health_check() -> HealthResponse:
 @app.get("/health/details", response_model=DetailedHealthResponse)
 async def health_check_detailed() -> DetailedHealthResponse:
     """Detailed health check with connection testing (slower)."""
-    from artifact_search import __version__
-
     if not _search_engine:
         raise HTTPException(status_code=503, detail="Search engine not initialized")
 
