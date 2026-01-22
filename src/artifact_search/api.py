@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from artifact_search import __version__
 from artifact_search.config import get_settings
 from artifact_search.models import AppSource, Artifact, SearchResult
 from artifact_search.search import ArtifactSearchEngine
@@ -23,12 +24,26 @@ _search_engine: ArtifactSearchEngine | None = None
 async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
     global _search_engine
+    settings = get_settings()
+
+    # Startup banner for container logs
+    logger.info("=" * 60)
+    logger.info(f"Artifact Search API v{__version__} starting")
+    logger.info(f"CORS origins: {settings.get_allowed_origins()}")
+
     _search_engine = ArtifactSearchEngine()
-    logger.info("Search engine initialized")
+    sources = [s.value for s in _search_engine.get_configured_sources()]
+    logger.info(f"Configured sources: {sources}")
+    logger.info("=" * 60)
+
     yield
+
+    # Shutdown logging
+    logger.info("Shutting down Artifact Search API...")
     if _search_engine:
         await _search_engine.close()
-        logger.info("Search engine closed")
+        logger.info("All connector connections closed")
+    logger.info("Shutdown complete")
 
 
 app = FastAPI(
@@ -71,24 +86,42 @@ class ChatRequest(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    """Health check response."""
+    """Basic health check response (fast, for container probes)."""
 
     status: str
+    version: str
+
+
+class DetailedHealthResponse(BaseModel):
+    """Detailed health check response with connection status."""
+
+    status: str
+    version: str
     configured_sources: list[str]
     connections: dict[str, bool]
 
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
-    """Check API health and connection status."""
+    """Fast health check for container probes (no external calls)."""
+    if not _search_engine:
+        raise HTTPException(status_code=503, detail="Search engine not initialized")
+
+    return HealthResponse(status="healthy", version=__version__)
+
+
+@app.get("/health/details", response_model=DetailedHealthResponse)
+async def health_check_detailed() -> DetailedHealthResponse:
+    """Detailed health check with connection testing (slower)."""
     if not _search_engine:
         raise HTTPException(status_code=503, detail="Search engine not initialized")
 
     connections = await _search_engine.test_connections()
     sources = [s.value for s in _search_engine.get_configured_sources()]
 
-    return HealthResponse(
+    return DetailedHealthResponse(
         status="healthy",
+        version=__version__,
         configured_sources=sources,
         connections=connections,
     )
