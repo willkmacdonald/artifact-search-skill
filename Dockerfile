@@ -25,8 +25,8 @@ RUN useradd --create-home --shell /bin/bash appuser
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy application code
-COPY src/ ./src/
+# Copy application code (only the package, not the egg-info)
+COPY src/artifact_search/ ./artifact_search/
 
 # Switch to non-root user
 USER appuser
