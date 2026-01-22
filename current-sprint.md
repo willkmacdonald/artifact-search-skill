@@ -1,10 +1,10 @@
-# Current Sprint: Phase 1 - Containerize Backend
+# Current Sprint: Phase 2 - Deploy Backend to Azure
 
 ## Goal
-Get the FastAPI backend running in a Docker container, ready for Azure deployment.
+Deploy containerized backend to existing Container Apps Environment.
 
 ## Context
-- Migrating artifact-search-skill to Azure for demo hosting
+- Phase 1 complete: Backend containerized and tested locally
 - Reusing existing Container Apps Environment and ACR to minimize costs
 - See `docs/specs/implementation-plan.md` for full migration plan
 
@@ -12,89 +12,81 @@ Get the FastAPI backend running in a Docker container, ready for Azure deploymen
 
 ## Tasks
 
-### PR 1.1: Create Dockerfile and .dockerignore ✅ COMPLETE
-**Branch**: `feature/dockerfile` (merged)
+### PR 2.1: Push Image to ACR
+**Branch**: `feature/acr-push`
 
-- [x] Create `Dockerfile` (multi-stage: builder + runtime)
-  - Python 3.11-slim base image
-  - Install dependencies in builder stage
-  - Copy only `src/artifact_search/` to runtime stage
-  - Non-root user for security
-  - Health check command
-  - CMD: uvicorn with `--host 0.0.0.0`
-  - PYTHONUNBUFFERED=1 for container logging
-- [x] Create `.dockerignore`
-  - Exclude: `.git`, `venv/`, `.env`, `frontend/`, `tests/`, `*.md`, `sample_data/`
-- [x] Test locally: `docker build -t artifact-search-api .`
-- [x] Test locally: `docker run -p 8000:8000 --env-file .env artifact-search-api`
-- [x] Verify `/health` endpoint works
+- [ ] Document manual deployment steps in `docs/deployment.md`
+- [ ] Create deployment script (`scripts/deploy-backend.sh`)
+  - Build and tag image
+  - Login to ACR
+  - Push image
+- [ ] Push first image to existing ACR
+- [ ] Test: Image visible in ACR portal
 
 **Files**:
-- `Dockerfile` (created)
-- `.dockerignore` (created)
+- `docs/deployment.md` (create)
+- `scripts/deploy-backend.sh` (create)
 
 ---
 
-### PR 1.2: Make CORS Configurable
-**Branch**: `feature/configurable-cors`
+### PR 2.2: Create Container App
+**Branch**: `feature/container-app`
 
-- [ ] Add `ALLOWED_ORIGINS` env var support to `api.py`
-- [ ] Default to `http://localhost:3000,http://127.0.0.1:3000`
-- [ ] Parse comma-separated string into list
-- [ ] Test: Frontend still works with default config
-- [ ] Test: Can override via environment variable
+- [ ] Create Container App via Azure CLI or Portal
+- [ ] Configure environment variables from `.env`
+- [ ] Configure secrets for API keys (ADO PAT, Figma token, etc.)
+- [ ] Set scale-to-zero (min replicas: 0, max replicas: 1)
+- [ ] Update `ALLOWED_ORIGINS` for Container App URL
+- [ ] Test: `/health` endpoint accessible from internet
+- [ ] Test: `/health/details` shows all connectors working
 
 **Files**:
-- `src/artifact_search/api.py` (modify lines 40-47)
+- `docs/deployment.md` (update with Container App setup)
 
 ---
 
-### PR 1.3: Container-Ready Logging and Health
-**Branch**: `feature/container-ready`
+### PR 2.3: Add GitHub Actions CI/CD
+**Branch**: `feature/backend-cicd`
 
-- [ ] Add startup banner log with version/config info
-- [ ] Ensure `/health` is fast (no slow operations)
-- [ ] Add `close()` method cleanup logging
-- [ ] Test: Container logs show startup info
-- [ ] Test: Health check responds < 1 second
+- [ ] Create `.github/workflows/deploy-backend.yml`
+  - Trigger on push to main (paths: `src/**`, `Dockerfile`)
+  - Build Docker image
+  - Push to ACR
+  - Deploy to Container Apps
+- [ ] Add `AZURE_CREDENTIALS` secret to GitHub repo
+- [ ] Test: Push to main triggers deployment
+- [ ] Test: New code deploys automatically
 
 **Files**:
-- `src/artifact_search/api.py` (modify)
-- `src/artifact_search/__init__.py` (add version if needed)
+- `.github/workflows/deploy-backend.yml` (create)
+- `docs/deployment.md` (update with CI/CD info)
 
 ---
 
 ## Definition of Done
 - [ ] All 3 PRs merged to main
-- [ ] Docker container builds successfully
-- [ ] Container runs locally with all connectors working
-- [ ] Frontend connects to containerized backend
-- [ ] Ready to push image to Azure Container Registry
+- [ ] Backend accessible at `https://artifact-search-api.<env>.azurecontainerapps.io`
+- [ ] `/health` endpoint responds from internet
+- [ ] All 4 connectors working (check `/health/details`)
+- [ ] Push to main triggers automatic deployment
 
 ---
 
 ## Notes
-- Previous sprint work (Figma caching) deprioritized - rate limits no longer blocking
-- Focus is on deployment infrastructure, not feature development
-- Keep changes minimal to reduce risk
+- Need existing ACR name and Container Apps Environment name before starting
+- API keys will be configured as Container Apps secrets
+- Scale-to-zero means 5-15s cold start delay (acceptable for demo)
 
-## Session 4 Accomplishments (2026-01-21)
-- [x] Completed PR 1.1: Dockerfile and .dockerignore
-- [x] Fixed module path issue (`COPY src/artifact_search/` instead of `COPY src/`)
-- [x] Added `PYTHONUNBUFFERED=1` for container logging (pr-reviewer fix)
-- [x] Verified container builds and runs with all connectors
-- [x] Merged PR #1 to main
-- [ ] **Next**: PR 1.2 (Configurable CORS)
+## Phase 1 Accomplishments (Complete)
+- [x] PR 1.1: Dockerfile and .dockerignore
+- [x] PR 1.2: Configurable CORS (`ALLOWED_ORIGINS` env var)
+- [x] PR 1.3: Container-ready logging and fast health check
+- [x] Container builds and runs locally with all connectors
+- [x] `/health` responds in ~10ms (fast for probes)
+- [x] `/health/details` provides full connection status
 
-## Session 3 Accomplishments (2026-01-21)
-- [x] Created Azure migration plan (`docs/specs/implementation-plan.md`)
-- [x] Created backend architecture spec (`docs/specs/backend-design.md`)
-- [x] Created frontend architecture spec (`docs/specs/frontend-design.md`)
-- [x] Created project-local `/load-context` skill (`.claude/skills/load-context.md`)
-- [x] Broke Phase 1 into 3 PR-sized tasks
-
-## Previous Sprint Accomplishments
-- [x] Fixed all 4 connectors (Azure DevOps, Figma, Ice Panel, Notion)
-- [x] Added retry/caching to Figma connector
-- [x] Ran pr-reviewer and fixed CRITICAL/IMPORTANT issues
-- [x] Pushed all code to GitHub
+## Session 5 Accomplishments (2026-01-21)
+- [x] Completed PR 1.2: Configurable CORS
+- [x] Completed PR 1.3: Container-ready logging and fast health check
+- [x] Phase 1 complete - ready for Azure deployment
+- [ ] **Next**: PR 2.1 (Push Image to ACR)

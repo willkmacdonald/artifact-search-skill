@@ -30,29 +30,30 @@ Migrate artifact-search-skill from local development to Azure for demo/PoC hosti
 
 ---
 
-## Phase 1: Containerize Backend (Current Sprint)
+## Phase 1: Containerize Backend ✅ COMPLETE
 
 **Goal**: Get the FastAPI backend running in a Docker container locally.
 
-### PR 1.1: Create Dockerfile and .dockerignore
-- Create multi-stage Dockerfile (builder + runtime)
-- Create .dockerignore to exclude dev files
-- Update `__main__.py` to bind to `0.0.0.0` (container networking)
-- Test: `docker build` and `docker run` locally
+### PR 1.1: Create Dockerfile and .dockerignore ✅
+- Created multi-stage Dockerfile (builder + runtime)
+- Created .dockerignore to exclude dev files
+- Configured uvicorn to bind to `0.0.0.0`
+- Added `PYTHONUNBUFFERED=1` for container logging
 
-### PR 1.2: Make CORS Configurable
-- Add `ALLOWED_ORIGINS` environment variable to `api.py`
-- Default to localhost for backwards compatibility
-- Test: Verify frontend still works locally
+### PR 1.2: Make CORS Configurable ✅
+- Added `ALLOWED_ORIGINS` environment variable to `api.py`
+- Defaults to `http://localhost:3000,http://127.0.0.1:3000`
+- Parses comma-separated string into list
 
-### PR 1.3: Add Health Check Endpoint Improvements
-- Ensure `/health` returns quickly (for container probes)
-- Add startup logging for container debugging
-- Test: Container health check passes
+### PR 1.3: Add Health Check Endpoint Improvements ✅
+- `/health` responds in ~10ms (fast for container probes)
+- `/health/details` provides full connection testing
+- Added startup banner with version, CORS, and configured sources
+- Added shutdown logging for debugging
 
 ---
 
-## Phase 2: Deploy Backend to Azure
+## Phase 2: Deploy Backend to Azure (Current Sprint)
 
 **Goal**: Deploy containerized backend to existing Container Apps Environment.
 
