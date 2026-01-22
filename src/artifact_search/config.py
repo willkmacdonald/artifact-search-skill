@@ -36,6 +36,13 @@ class Settings(BaseSettings):
     azure_ai_deployment: str = Field(default="gpt-4o")
     azure_ai_use_ad_auth: bool = Field(default=True)  # Use DefaultAzureCredential
 
+    # CORS Configuration
+    allowed_origins: str = Field(default="http://localhost:3000,http://127.0.0.1:3000")
+
+    def get_allowed_origins(self) -> list[str]:
+        """Parse comma-separated ALLOWED_ORIGINS into list."""
+        return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
+
     def is_azure_devops_configured(self) -> bool:
         """Check if Azure DevOps is configured."""
         return bool(self.azure_devops_org_url and self.azure_devops_pat)
