@@ -33,3 +33,8 @@ class BaseConnector(ABC):
     async def test_connection(self) -> bool:
         """Test the connection to the app."""
         ...
+
+    @abstractmethod
+    async def close(self) -> None:
+        """Close any open connections."""
+        ...

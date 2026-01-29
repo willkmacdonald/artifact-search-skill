@@ -73,6 +73,7 @@ class AzureDevOpsConnector(BaseConnector):
                 return re.sub(r"['\"\\\[\]]", "", term)
 
             sanitized_terms = [sanitize_term(t) for t in query.search_terms]
+            sanitized_project = sanitize_term(project)
             search_terms = " OR ".join(
                 f"[System.Title] CONTAINS '{term}' OR "
                 f"[System.Description] CONTAINS '{term}'"
@@ -84,7 +85,7 @@ class AzureDevOpsConnector(BaseConnector):
                 SELECT [System.Id], [System.Title], [System.Description],
                        [System.WorkItemType], [System.State], [System.CreatedDate]
                 FROM WorkItems
-                WHERE [System.TeamProject] = '{project}'
+                WHERE [System.TeamProject] = '{sanitized_project}'
                 AND ({search_terms})
                 ORDER BY [System.ChangedDate] DESC
                 """

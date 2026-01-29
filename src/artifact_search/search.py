@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import time
+from datetime import UTC, datetime
 
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from openai import AsyncAzureOpenAI
@@ -97,8 +98,10 @@ class ArtifactSearchEngine:
                 sources_searched.append(connector.source)
 
         # Sort by relevance (for now, just by updated_at)
+        # Use a minimum datetime as fallback for None values
+        min_datetime = datetime(1970, 1, 1, tzinfo=UTC)
         all_artifacts.sort(
-            key=lambda a: a.updated_at or a.created_at or "",
+            key=lambda a: a.updated_at or a.created_at or min_datetime,
             reverse=True,
         )
 

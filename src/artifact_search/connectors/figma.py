@@ -53,11 +53,13 @@ class FigmaConnector(BaseConnector):
     ) -> httpx.Response:
         """Make HTTP request with exponential backoff retry on rate limits."""
         client = await self._get_client()
-        last_exception = None
+        last_exception: Exception | None = None
+        last_response: httpx.Response | None = None
 
         for attempt in range(max_retries):
             try:
                 response = await client.request(method, url, **kwargs)
+                last_response = response
 
                 # Success
                 if response.status_code == 200:
@@ -97,11 +99,13 @@ class FigmaConnector(BaseConnector):
         # All retries exhausted
         if last_exception:
             raise last_exception
-        raise httpx.HTTPStatusError(
-            f"Failed after {max_retries} retries",
-            request=response.request,
-            response=response,
-        )
+        if last_response is not None:
+            raise httpx.HTTPStatusError(
+                f"Failed after {max_retries} retries",
+                request=last_response.request,
+                response=last_response,
+            )
+        raise httpx.ConnectError(f"Failed to connect after {max_retries} retries")
 
     async def _get_file_data(self, file_key: str) -> dict:
         """Get file data with caching."""
