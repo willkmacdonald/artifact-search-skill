@@ -4,11 +4,13 @@ AI-powered multi-app artifact search for MedTech risk management. Ask natural la
 
 ## Demo
 
+**Live**: https://artifact-search.willmacdonald.com
+
 Ask questions like:
-- "What are the risks related to arrhythmia detection?"
-- "Show me mitigations for patient data security"
-- "Find the UI designs for alert configuration"
-- "What is the system architecture for CardioWatch?"
+- "What are the risks related to alerts?"
+- "Show me the system architecture for CardioWatch"
+- "Find UI designs for the risk dashboard"
+- "What mitigations exist for arrhythmia detection?"
 
 The AI routes your query to the appropriate apps, searches for relevant artifacts, and returns a summarized response.
 

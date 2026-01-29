@@ -50,6 +50,15 @@ Add observability and improve reliability for ongoing demos.
 
 ## Previous Phase Accomplishments
 
+### Session 8 (2026-01-29): Code Quality & Demo Polish
+- [x] PR-reviewer findings fixed (4 issues):
+  - Added missing abstract `close()` method to BaseConnector
+  - Fixed potential UnboundLocalError in Figma retry logic
+  - Fixed datetime/string type mixing in artifact sorting
+  - Sanitized project name in Azure DevOps WIQL queries
+- [x] Updated suggested demo prompts for better showcase
+- [x] Updated README with live demo URL
+
 ### Session 7 (2026-01-29): Local & Azure Testing
 - [x] Started FastAPI backend locally for testing
 - [x] Fixed Figma credentials (file key was incorrect format)
