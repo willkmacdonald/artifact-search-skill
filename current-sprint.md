@@ -50,6 +50,16 @@ Add observability and improve reliability for ongoing demos.
 
 ## Previous Phase Accomplishments
 
+### Session 7 (2026-01-29): Local & Azure Testing
+- [x] Started FastAPI backend locally for testing
+- [x] Fixed Figma credentials (file key was incorrect format)
+- [x] Verified all 4 connectors working locally (Azure DevOps, Figma, Notion, Ice Panel)
+- [x] Started Next.js frontend locally
+- [x] Triggered Azure deployments for both frontend and backend
+- [x] Updated Azure Container App env vars with correct Figma credentials
+- [x] Verified Figma search working on Azure (was showing false, now true)
+- [x] Full end-to-end testing confirmed working
+
 ### Session 6 (2026-01-22): Phases 2 & 3 Complete
 - [x] Fixed GitHub Actions auth (azure/login@v1 for JSON credentials)
 - [x] Created new Service Principal with contributor role
