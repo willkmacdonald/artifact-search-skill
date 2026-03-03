@@ -72,13 +72,7 @@ class IcePanelConnector(BaseConnector):
             diagram_handle_map: dict[str, str] = {}
             diagrams_list: list[dict] = []
             if diagrams_response.status_code == 200:
-                diagrams_data = diagrams_response.json()
-                diagrams_list = diagrams_data.get("diagrams", [])
-                logger.info(
-                    f"IcePanel: {len(diagrams_list)} diagrams, "
-                    f"search_terms={search_terms_lower}, "
-                    f"response_keys={list(diagrams_data.keys())}"
-                )
+                diagrams_list = diagrams_response.json().get("diagrams", [])
                 for d in diagrams_list:
                     diagram_handle_map[d["id"]] = d.get("handleId", d["id"])
 
@@ -89,13 +83,8 @@ class IcePanelConnector(BaseConnector):
 
             if objects_response.status_code == 200:
                 objects = objects_response.json()
-                model_objects = objects.get("modelObjects", [])
-                logger.info(
-                    f"IcePanel: {len(model_objects)} model objects, "
-                    f"response_keys={list(objects.keys())}"
-                )
 
-                for obj in model_objects:
+                for obj in objects.get("modelObjects", []):
                     obj_name = obj.get("name", "")
                     obj_description = obj.get("description", "")
                     obj_type = obj.get("type", "")
@@ -148,7 +137,6 @@ class IcePanelConnector(BaseConnector):
                     )
                     artifacts.append(artifact)
 
-            logger.info(f"IcePanel: returning {len(artifacts)} artifacts")
             return artifacts[:20]  # Limit results
 
         except Exception as e:
