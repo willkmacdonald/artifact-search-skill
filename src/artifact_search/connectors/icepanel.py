@@ -81,13 +81,14 @@ class IcePanelConnector(BaseConnector):
                     # Check if matches search terms
                     searchable = f"{obj_name} {obj_description}".lower()
                     if any(term in searchable for term in search_terms_lower):
+                        handle_id = obj.get("handleId", obj.get("id", ""))
                         artifact = Artifact(
                             id=obj.get("id", ""),
                             source=AppSource.ICEPANEL,
                             artifact_type=ArtifactType.ARCHITECTURE,
                             title=obj_name,
                             content=obj_description or f"C4 {obj_type}: {obj_name}",
-                            url=f"https://app.icepanel.io/landscapes/{landscape_id}",
+                            url=f"https://app.icepanel.io/landscapes/{landscape_id}/versions/latest/model/objects?object_tab=details&object={handle_id}",
                             metadata={
                                 "object_type": obj_type,
                                 "landscape_id": landscape_id,
@@ -111,6 +112,7 @@ class IcePanelConnector(BaseConnector):
 
                     searchable = f"{view_name} {view_description}".lower()
                     if any(term in searchable for term in search_terms_lower):
+                        handle_id = view.get("handleId", view.get("id", ""))
                         artifact = Artifact(
                             id=view.get("id", ""),
                             source=AppSource.ICEPANEL,
@@ -118,7 +120,7 @@ class IcePanelConnector(BaseConnector):
                             title=f"Diagram: {view_name}",
                             content=view_description
                             or f"Architecture diagram: {view_name}",
-                            url=f"https://app.icepanel.io/landscapes/{landscape_id}/diagrams/{view.get('id')}",
+                            url=f"https://app.icepanel.io/landscapes/{landscape_id}/versions/latest/diagrams/{handle_id}",
                             metadata={
                                 "object_type": "diagram",
                                 "view_type": view.get("type"),
@@ -150,6 +152,7 @@ class IcePanelConnector(BaseConnector):
                 return None
 
             obj = response.json().get("data", {})
+            handle_id = obj.get("handleId", obj.get("id", ""))
 
             return Artifact(
                 id=obj.get("id", ""),
@@ -157,7 +160,7 @@ class IcePanelConnector(BaseConnector):
                 artifact_type=ArtifactType.ARCHITECTURE,
                 title=obj.get("name", ""),
                 content=obj.get("description", ""),
-                url=f"https://app.icepanel.io/landscapes/{landscape_id}",
+                url=f"https://app.icepanel.io/landscapes/{landscape_id}/versions/latest/model/objects?object_tab=details&object={handle_id}",
                 metadata={
                     "object_type": obj.get("type"),
                     "tags": obj.get("tags", []),
