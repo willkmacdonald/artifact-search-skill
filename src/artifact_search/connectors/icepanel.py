@@ -127,7 +127,7 @@ class IcePanelConnector(BaseConnector):
                         title=f"Diagram: {view_name}",
                         content=view_description
                         or f"Architecture diagram: {view_name}",
-                        url=f"https://app.icepanel.io/landscapes/{landscape_id}/versions/latest/diagrams/viewer?diagram={handle_id}",
+                        url=f"https://app.icepanel.io/landscapes/{landscape_id}/versions/latest/diagrams/editor?diagram={handle_id}",
                         metadata={
                             "object_type": "diagram",
                             "view_type": view.get("type"),
@@ -210,7 +210,7 @@ class IcePanelConnector(BaseConnector):
             diagram_handle = diagram_handle_map.get(first_diagram_id)
             if diagram_handle:
                 return (
-                    f"{base}/diagrams/viewer?diagram={diagram_handle}&model={handle_id}"
+                    f"{base}/diagrams/editor?diagram={diagram_handle}&model={handle_id}"
                 )
 
         # Fallback to model objects detail view
