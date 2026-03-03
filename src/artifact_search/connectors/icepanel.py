@@ -72,7 +72,13 @@ class IcePanelConnector(BaseConnector):
             diagram_handle_map: dict[str, str] = {}
             diagrams_list: list[dict] = []
             if diagrams_response.status_code == 200:
-                diagrams_list = diagrams_response.json().get("diagrams", [])
+                diagrams_data = diagrams_response.json()
+                diagrams_list = diagrams_data.get("diagrams", [])
+                logger.info(
+                    f"IcePanel: {len(diagrams_list)} diagrams, "
+                    f"search_terms={search_terms_lower}, "
+                    f"response_keys={list(diagrams_data.keys())}"
+                )
                 for d in diagrams_list:
                     diagram_handle_map[d["id"]] = d.get("handleId", d["id"])
 
@@ -83,8 +89,13 @@ class IcePanelConnector(BaseConnector):
 
             if objects_response.status_code == 200:
                 objects = objects_response.json()
+                model_objects = objects.get("modelObjects", [])
+                logger.info(
+                    f"IcePanel: {len(model_objects)} model objects, "
+                    f"response_keys={list(objects.keys())}"
+                )
 
-                for obj in objects.get("modelObjects", []):
+                for obj in model_objects:
                     obj_name = obj.get("name", "")
                     obj_description = obj.get("description", "")
                     obj_type = obj.get("type", "")
@@ -137,10 +148,11 @@ class IcePanelConnector(BaseConnector):
                     )
                     artifacts.append(artifact)
 
+            logger.info(f"IcePanel: returning {len(artifacts)} artifacts")
             return artifacts[:20]  # Limit results
 
         except Exception as e:
-            logger.error(f"Ice Panel search failed: {e}")
+            logger.error(f"Ice Panel search failed: {type(e).__name__}: {e}", exc_info=True)
             return []
 
     async def get_by_id(self, artifact_id: str) -> Artifact | None:
