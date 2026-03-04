@@ -407,7 +407,7 @@ class AzureDevOpsConnector(BaseConnector):
            logger.warning("Not configured, skipping search")
            return []
        try:
-           # ... search logic
+           # ... search logic 
        except Exception as e:
            logger.error(f"Search failed: {e}")
            return []  # Return empty list, don't crash
